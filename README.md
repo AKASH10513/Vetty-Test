@@ -8,11 +8,15 @@ Error Handling: The application gracefully handles file not found errors, invali
 HTML Markup Preservation: Any HTML markup present in the file content is preserved and rendered properly in the browser.
 
 **Usage**
+<br/>
 1... Clone this repository to your local machine:
+<br>
 2... Navigate to the project directory:
-3... Install the required dependencies:
+<br/>
+3... Install the required dependencies: <br/>
      pip install -r /myenv/requirements.txt
-4... Run the Flask application:
+<br/>
+4... Run the Flask application: <br/>
      python app.py
 
 Open your web browser and go to http://127.0.0.1:5000/ to view the default file (file1.txt). Optionally, you can specify a different file name in the URL, e.g., http://127.0.0.1:5000/file2.txt.
