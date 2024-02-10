@@ -1,35 +1,41 @@
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request
 from markupsafe import Markup
 import os
 
 app = Flask(__name__)
+
+def read_file_lines(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
+            return file.readlines()
+    except FileNotFoundError:
+        return [f"Error: File {file_path} not found"]
+    except PermissionError:
+        return [f"Error: Permission denied while trying to access {file_path}"]
+    except Exception as e:
+        return [f"An unexpected error occurred: {e}"]
 
 @app.route('/')
 @app.route('/<filename>', methods=['GET'])
 def render_file_content(filename='file1.txt'):
     try:
         # Determine file path
-        parent_directory = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(parent_directory, filename)
+        parent_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(parent_dir, filename)
         
         # Read the content of the file
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-            
-            # Extract optional URL query parameters
-            start_line = int(request.args.get('start_line', 1))
-            end_line = int(request.args.get('end_line', -1))
-            
-            # Handle negative indices for end_line
-            if end_line < 0:
-                end_line = len(lines) + end_line + 1
-            
-            # Validate line numbers
-            if start_line < 1 or end_line < start_line or end_line > len(lines):
-                raise ValueError("Invalid line number parameter.")
-            
-            # Extract the lines based on start_line and end_line
-            content = ''.join(lines[start_line - 1:end_line])
+        lines = read_file_lines(file_path)
+
+        start_line = request.args.get('start_line', type=int)
+        end_line = request.args.get('end_line', type=int)
+
+        if start_line is not None and end_line is not None:
+            try:
+                lines = lines[start_line - 1:end_line]
+            except Exception as e:
+                return render_template('error_template.html', error=f"Error processing lines: {e}")
+
+        content = '<br>'.join(lines)
     except FileNotFoundError:
         return render_template('error.html', error_message=f"File '{filename}' not found.")
     except ValueError:
@@ -40,7 +46,7 @@ def render_file_content(filename='file1.txt'):
     # Preserve any HTML markup in the content
     content = Markup(content)
 
-    return render_template('file_content.html', content=content)
+    return render_template('lines.html', content=content)
 
 @app.errorhandler(404)
 def not_found_error(error):
