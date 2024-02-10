@@ -24,5 +24,5 @@ Open your web browser and go to http://127.0.0.1:5000/ to view the default file 
 You can also specify start and end line numbers as URL query parameters to view only a portion of the file, e.g., http://127.0.0.1:5000/file1.txt?start_line=5&end_line=10.
 
 **Dependencies**
-Flask: Web framework for Python
+Flask: Web framework for Python <br>
 MarkupSafe: Library for HTML escaping
